@@ -32,8 +32,8 @@ const HomePage = () => {
                     <h2 className="text-white text-lg font-bold leading-tight tracking-tight">Alex Rivera</h2>
                 </div>
                 <div className="flex w-12 items-center justify-end">
-                    <button className="flex items-center justify-center rounded-xl size-10 bg-card-dark neumorphic-flat text-white">
-                        <span className="material-symbols-outlined">notifications</span>
+                    <button onClick={() => navigate('/settings')} className="flex items-center justify-center rounded-xl size-10 bg-card-dark neumorphic-flat text-white">
+                        <span className="material-symbols-outlined">settings</span>
                     </button>
                 </div>
             </header>

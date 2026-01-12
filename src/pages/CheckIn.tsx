@@ -1,6 +1,8 @@
 import { useState, useEffect } from 'react';
 import { useNavigate, useSearchParams } from 'react-router-dom';
+import { motion } from 'framer-motion';
 import { GamificationService } from '../services/GamificationService';
+import PageTransition from '../components/PageTransition';
 
 const CheckInPage = () => {
     const navigate = useNavigate();
@@ -43,7 +45,7 @@ const CheckInPage = () => {
     }, [step, timeLeft]);
 
     return (
-        <div className="font-display bg-background-light dark:bg-background-dark text-slate-900 dark:text-white min-h-screen flex flex-col max-w-md mx-auto">
+        <PageTransition className="font-display bg-background-light dark:bg-background-dark text-slate-900 dark:text-white min-h-screen flex flex-col max-w-md mx-auto">
             <header className="flex items-center justify-between p-4 bg-background-light dark:bg-background-dark/80 sticky top-0 z-10">
                 <button onClick={() => navigate('/')} className="flex size-10 shrink-0 items-center justify-center rounded-full bg-slate-100 dark:bg-slate-800">
                     <span className="material-symbols-outlined text-slate-500 dark:text-slate-400">close</span>
@@ -63,7 +65,12 @@ const CheckInPage = () => {
 
             <main className="flex-1 px-6 pb-12 flex flex-col w-full">
                 {step === 1 ? (
-                    <div className="flex flex-col flex-1">
+                    <motion.div
+                        initial={{ opacity: 0, x: -20 }}
+                        animate={{ opacity: 1, x: 0 }}
+                        exit={{ opacity: 0, x: -20 }}
+                        className="flex flex-col flex-1"
+                    >
                         <div className="pt-6 pb-8 text-center">
                             <h3 className="text-3xl font-bold leading-tight mb-2">Check-in</h3>
                             <p className="text-slate-500 dark:text-slate-400">Stack your habits to fuel your day</p>
@@ -91,16 +98,24 @@ const CheckInPage = () => {
                                 Continue to Pause <span className="material-symbols-outlined text-sm">arrow_forward</span>
                             </button>
                         </div>
-                    </div>
+                    </motion.div>
                 ) : (
-                    <div className="flex flex-col items-center justify-center py-10">
+                    <motion.div
+                        initial={{ opacity: 0, x: 20 }}
+                        animate={{ opacity: 1, x: 0 }}
+                        className="flex flex-col items-center justify-center py-10"
+                    >
                         <div className="text-center mb-12">
                             <h3 className="text-2xl font-light tracking-wide text-slate-500 dark:text-slate-300">Gratitude Pause</h3>
                             <p className="text-4xl font-bold mt-2">00:{timeLeft.toString().padStart(2, '0')}</p>
                         </div>
                         <div className="relative flex items-center justify-center w-64 h-64 mb-16">
                             <div className="absolute inset-0 border-2 border-slate-200 dark:border-slate-800 rounded-full"></div>
-                            <div className="absolute inset-4 border-4 border-primary/30 rounded-full breathing-ring"></div>
+                            <motion.div
+                                animate={{ scale: [1, 1.1, 1], opacity: [0.3, 0.6, 0.3] }}
+                                transition={{ repeat: Infinity, duration: 4, ease: "easeInOut" }}
+                                className="absolute inset-4 border-4 border-primary/30 rounded-full"
+                            ></motion.div>
                             <div className="absolute inset-16 bg-gradient-to-br from-primary to-blue-600 rounded-full flex items-center justify-center shadow-xl shadow-primary/40">
                                 <span className="material-symbols-outlined text-white text-5xl">self_improvement</span>
                             </div>
@@ -119,13 +134,13 @@ const CheckInPage = () => {
                                 Finish Practice
                             </button>
                         </div>
-                    </div>
+                    </motion.div>
                 )}
             </main>
             <div className="h-6 w-full bg-background-light dark:bg-background-dark">
                 <div className="w-32 h-1 bg-slate-300 dark:bg-slate-700 rounded-full mx-auto mt-2"></div>
             </div>
-        </div>
+        </PageTransition>
     );
 };
 
