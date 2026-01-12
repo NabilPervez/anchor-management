@@ -1,8 +1,24 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import BottomNav from '../components/BottomNav';
+import { StorageService } from '../services/StorageService';
 
 const RoutinePage = () => {
     const [selectedArchetype, setSelectedArchetype] = useState(0);
+
+    useEffect(() => {
+        const settings = StorageService.getSettings();
+        if (settings.archetypeIndex !== undefined) {
+            setSelectedArchetype(settings.archetypeIndex);
+        }
+    }, []);
+
+    const handleSave = () => {
+        const settings = StorageService.getSettings();
+        settings.archetypeIndex = selectedArchetype;
+        StorageService.saveSettings(settings);
+        alert("Routine Saved!");
+    };
+
     return (
         <div className="bg-background-light dark:bg-background-dark font-display text-slate-900 dark:text-white min-h-screen max-w-md mx-auto relative pb-24">
             <header className="sticky top-0 z-50 bg-background-light/80 dark:bg-background-dark/80 backdrop-blur-md border-b border-slate-200 dark:border-slate-800 p-4 flex justify-between items-center">
@@ -12,8 +28,7 @@ const RoutinePage = () => {
                 <div className="flex flex-col items-center">
                     <h2 className="text-lg font-bold">Daily Routine</h2>
                     <div className="flex items-center gap-1">
-                        <span className="text-[10px] font-bold text-primary uppercase tracking-widest">Level 14</span>
-                        <div className="w-16 h-1 bg-slate-700 rounded-full overflow-hidden"><div className="w-[65%] h-full bg-primary"></div></div>
+                        <span className="text-[10px] font-bold text-primary uppercase tracking-widest">System</span>
                     </div>
                 </div>
                 <button className="p-2"><span className="material-symbols-outlined">notifications</span></button>
@@ -77,7 +92,7 @@ const RoutinePage = () => {
                             <p className="text-sm font-bold text-white"><span className="text-primary">+450</span> XP Total</p>
                         </div>
                     </div>
-                    <button className="bg-primary px-6 py-2.5 rounded-full font-bold text-sm shadow-lg shadow-primary/20">Save Routine</button>
+                    <button onClick={handleSave} className="bg-primary px-6 py-2.5 rounded-full font-bold text-sm shadow-lg shadow-primary/20">Save Routine</button>
                 </div>
             </footer>
             <BottomNav />

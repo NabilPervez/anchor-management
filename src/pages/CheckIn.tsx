@@ -1,10 +1,39 @@
 import { useState, useEffect } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, useSearchParams } from 'react-router-dom';
+import { GamificationService } from '../services/GamificationService';
 
 const CheckInPage = () => {
     const navigate = useNavigate();
+    const [searchParams] = useSearchParams();
+    const anchorId = searchParams.get('anchorId');
     const [step, setStep] = useState(1);
     const [timeLeft, setTimeLeft] = useState(24);
+    const [selectedHabits, setSelectedHabits] = useState<string[]>([]);
+
+    // Default habits (in future load dynamically based on anchorId)
+    const availableHabits = ['Drink 500ml Water', '5-Min Sunlight Exposure', 'Take Vitamin D', 'Stretch for 2 Minutes'];
+
+    const handleToggleHabit = (habit: string) => {
+        if (selectedHabits.includes(habit)) {
+            setSelectedHabits(prev => prev.filter(h => h !== habit));
+        } else {
+            setSelectedHabits(prev => [...prev, habit]);
+        }
+    };
+
+    const handleFinish = () => {
+        if (anchorId) {
+            // Calculate XP (Base 100 + 10 per habit)
+            const xp = 100 + (selectedHabits.length * 10);
+            GamificationService.logAnchorCompletion(
+                anchorId,
+                selectedHabits,
+                xp,
+                ['Vitality', 'Focus'] // Default traits for now
+            );
+        }
+        navigate('/');
+    };
 
     useEffect(() => {
         if (step === 2 && timeLeft > 0) {
@@ -40,15 +69,20 @@ const CheckInPage = () => {
                             <p className="text-slate-500 dark:text-slate-400">Stack your habits to fuel your day</p>
                         </div>
                         <div className="space-y-3">
-                            {['Drink 500ml Water', '5-Min Sunlight Exposure', 'Take Vitamin D', 'Stretch for 2 Minutes'].map((habit, i) => (
-                                <label key={i} className="flex items-center justify-between glass-card p-5 rounded-xl cursor-pointer hover:bg-white/5 transition-colors">
+                            {availableHabits.map((habit, i) => (
+                                <label key={i} className={`flex items-center justify-between glass-card p-5 rounded-xl cursor-pointer transition-colors ${selectedHabits.includes(habit) ? 'bg-primary/20 border-primary/40' : 'hover:bg-white/5'}`}>
                                     <div className="flex items-center gap-4">
-                                        <div className="bg-primary/10 p-2 rounded-lg">
-                                            <span className="material-symbols-outlined text-primary">task_alt</span>
+                                        <div className={`p-2 rounded-lg ${selectedHabits.includes(habit) ? 'bg-primary text-white' : 'bg-primary/10 text-primary'}`}>
+                                            <span className="material-symbols-outlined">task_alt</span>
                                         </div>
                                         <p className="text-base font-medium">{habit}</p>
                                     </div>
-                                    <input className="h-6 w-6 rounded-full border-slate-300 dark:border-slate-700 bg-transparent text-primary focus:ring-primary" type="checkbox" />
+                                    <input
+                                        className="h-6 w-6 rounded-full border-slate-300 dark:border-slate-700 bg-transparent text-primary focus:ring-primary"
+                                        type="checkbox"
+                                        checked={selectedHabits.includes(habit)}
+                                        onChange={() => handleToggleHabit(habit)}
+                                    />
                                 </label>
                             ))}
                         </div>
@@ -81,7 +115,7 @@ const CheckInPage = () => {
                             </h4>
                         </div>
                         <div className={`w-full mt-12 ${timeLeft > 0 ? 'opacity-50 cursor-not-allowed' : 'opacity-100'}`}>
-                            <button onClick={() => navigate('/')} disabled={timeLeft > 0} className="w-full bg-primary text-white h-14 rounded-xl font-bold text-lg flex items-center justify-center gap-2">
+                            <button onClick={handleFinish} disabled={timeLeft > 0} className="w-full bg-primary text-white h-14 rounded-xl font-bold text-lg flex items-center justify-center gap-2">
                                 Finish Practice
                             </button>
                         </div>
